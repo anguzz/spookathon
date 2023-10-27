@@ -1,8 +1,9 @@
 <script>
-    import Cowboy from './Cowboy.svelte';
-    import Frog from './Frog.svelte';
+    
     import { onMount } from 'svelte';
-  
+    import Cowboy from "$lib/components/Cowboy.svelte";
+    import Frog from "$lib/components/Frog.svelte";
+
     let spawnPoints = [
       { left: 525, top: 200 }, // top left
       { left: 900, top: 200 }, // top right
