@@ -1,5 +1,6 @@
 <script>
     import Cowboy from './Cowboy.svelte';
+    import Frog from './Frog.svelte';
     import { onMount } from 'svelte';
   
     let spawnPoints = [
@@ -11,34 +12,56 @@
     ];
   
     let cowboys = [];
+    let frogs = [];
     let score = 0;
   
-    function isTooClose(newSpawnPoint, existingCowboys) {
-      const minDistance = 10; // Minimum distance between cowboys
-      for (const cowboy of existingCowboys) {
-        const distance = Math.sqrt(Math.pow(newSpawnPoint.left - cowboy.left, 2) + Math.pow(newSpawnPoint.top - cowboy.top, 2));
+    function isTooClose(newSpawnPoint, existingEntities) {
+      const minDistance = 150; // Minimum distance between entities
+      for (const entity of existingEntities) {
+        const distance = Math.sqrt(Math.pow(newSpawnPoint.left - entity.left, 2) + Math.pow(newSpawnPoint.top - entity.top, 2));
         if (distance < minDistance) {
-          return true; // The new spawn point is too close to an existing cowboy
+          return true; // The new spawn point is too close to an existing entity
         }
       }
-      return false; // The new spawn point is not too close to any existing cowboy
+      return false; // The new spawn point is not too close to any existing entity
     }
   
     function spawnCowboy() {
       const randomSpawnPoint = spawnPoints[Math.floor(Math.random() * spawnPoints.length)];
-      if (!isTooClose(randomSpawnPoint, cowboys)) {
-        const cowboy = { id: Date.now(), left: randomSpawnPoint.left, top: randomSpawnPoint.top };
-        cowboys = [...cowboys, cowboy];
+      if (!isTooClose(randomSpawnPoint, [...frogs, ...cowboys])) {
+        cowboys = [...cowboys, { id: Date.now(), left: randomSpawnPoint.left, top: randomSpawnPoint.top }];
+      }
+    }
+  
+    function spawnFrog() {
+      const frogNames = ['Hoppy', 'Ribbit', 'Croaky', 'Jumpy', 'Lily']; // Frog names
+      const randomSpawnPoint = spawnPoints[Math.floor(Math.random() * spawnPoints.length)];
+      const newFrog = {
+        id: Date.now(),
+        name: frogNames[Math.floor(Math.random() * frogNames.length)], // Random frog name
+        left: randomSpawnPoint.left,
+        top: randomSpawnPoint.top
+      };
+  
+      if (!isTooClose(randomSpawnPoint, [...frogs, ...cowboys])) {
+        frogs = [...frogs, newFrog];
       }
     }
   
     function handleCowboyClick(clickedId) {
-      cowboys = cowboys.filter(cowboy => cowboy.id !== clickedId); // Remove the clicked cowboy
+      cowboys = cowboys.filter(cowboy => cowboy.id !== clickedId);
       score++;
     }
   
+    function handleFrogClick(clickedId) {
+  frogs = frogs.filter(frog => frog.id !== clickedId);
+  score--; // Decrement the score when a frog is clicked
+}
+
+  
     onMount(() => {
       setInterval(spawnCowboy, 2000);
+      setInterval(spawnFrog, 3000);
     });
   </script>
   
@@ -46,6 +69,9 @@
     <div class="score">Score: {score}</div>
     {#each cowboys as { id, left, top }, index}
       <Cowboy {id} {left} {top} onCowboyClick={handleCowboyClick} />
+    {/each}
+    {#each frogs as { id, name, left, top }, index}
+      <Frog {id} {name} {left} {top} onFrogClick={handleFrogClick} />
     {/each}
   </div>
   
@@ -59,13 +85,16 @@
       font-weight: bold;
     }
   
-    .cowboy {
+    .cowboy, .frog {
       width: 100px;
       height: 100px;
       position: absolute;
-      background-image: url("/src/cowboy.jpg");
-      background-size: cover;
       cursor: pointer;
+    }
+  
+    .frog img {
+      width: 100px;
+      height: auto;
     }
   
     #bg {
