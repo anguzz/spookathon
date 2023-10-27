@@ -90,7 +90,7 @@ function updateTimer() {
     clearInterval(timerInterval); // Stop the timer when it reaches zero
     clearInterval(cowboyInterval); // Stop spawning cowboys
     clearInterval(frogInterval); // Stop spawning frogs
-    alert("Game Over! Your final score: " + score);
+    //alert("Game Over! Your final score: " + score);
     timer=0;
 
   }
