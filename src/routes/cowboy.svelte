@@ -3,11 +3,16 @@
   export let top;
 
   function handleClick() {
-    alert('You clicked a cowboy!');
+    onCowboyClick(); // Call the parent component's function to increment score
   }
+
+  export let onCowboyClick; 
 </script>
 
+
+
 <div class="cowboy" style="left: {left}px; top: {top}px" on:click={handleClick}></div>
+
 
 <style>
   .cowboy {
