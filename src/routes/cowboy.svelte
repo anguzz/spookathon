@@ -1,18 +1,15 @@
 <script>
+  export let id;
   export let left;
   export let top;
+  export let onCowboyClick;
 
   function handleClick() {
-    onCowboyClick(); // Call the parent component's function to increment score
+    onCowboyClick(id);
   }
-
-  export let onCowboyClick; 
 </script>
 
-
-
 <div class="cowboy" style="left: {left}px; top: {top}px" on:click={handleClick}></div>
-
 
 <style>
   .cowboy {

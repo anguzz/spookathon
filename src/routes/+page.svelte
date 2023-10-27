@@ -13,15 +13,30 @@
     let cowboys = [];
     let score = 0;
   
-    function spawnCowboy() {
-      const randomSpawnPoint = spawnPoints[Math.floor(Math.random() * spawnPoints.length)];
-      cowboys = [...cowboys, { left: randomSpawnPoint.left, top: randomSpawnPoint.top }];
+    function isTooClose(newSpawnPoint, existingCowboys) {
+      const minDistance = 10; // Minimum distance between cowboys
+      for (const cowboy of existingCowboys) {
+        const distance = Math.sqrt(Math.pow(newSpawnPoint.left - cowboy.left, 2) + Math.pow(newSpawnPoint.top - cowboy.top, 2));
+        if (distance < minDistance) {
+          return true; // The new spawn point is too close to an existing cowboy
+        }
+      }
+      return false; // The new spawn point is not too close to any existing cowboy
     }
   
-    function handleCowboyClick(cowboyId) {
-    cowboys = cowboys.filter(cowboy => cowboy.id !== cowboyId); // Remove the clicked cowboy
-    score++;
-  }
+    function spawnCowboy() {
+      const randomSpawnPoint = spawnPoints[Math.floor(Math.random() * spawnPoints.length)];
+      if (!isTooClose(randomSpawnPoint, cowboys)) {
+        const cowboy = { id: Date.now(), left: randomSpawnPoint.left, top: randomSpawnPoint.top };
+        cowboys = [...cowboys, cowboy];
+      }
+    }
+  
+    function handleCowboyClick(clickedId) {
+      cowboys = cowboys.filter(cowboy => cowboy.id !== clickedId); // Remove the clicked cowboy
+      score++;
+    }
+  
     onMount(() => {
       setInterval(spawnCowboy, 2000);
     });
@@ -29,8 +44,8 @@
   
   <div id="bg">
     <div class="score">Score: {score}</div>
-    {#each cowboys as { left, top }, index}
-      <Cowboy {left} {top} onCowboyClick={handleCowboyClick} />
+    {#each cowboys as { id, left, top }, index}
+      <Cowboy {id} {left} {top} onCowboyClick={handleCowboyClick} />
     {/each}
   </div>
   
@@ -48,7 +63,7 @@
       width: 100px;
       height: 100px;
       position: absolute;
-      background-image: url("/src/cowboy.png");
+      background-image: url("/src/cowboy.jpg");
       background-size: cover;
       cursor: pointer;
     }
@@ -62,7 +77,5 @@
       position: relative;
       overflow-y: hidden;
     }
-  
-    /* Your other styles go here */
   </style>
   
